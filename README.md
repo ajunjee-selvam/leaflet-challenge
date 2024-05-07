@@ -18,4 +18,4 @@ To create the earthquake map, the following steps were executed.
 6. Include popups for each marker to include information about its magnitude, location, and depth. 
 
 ## Resources
-[USGS Earthquake Data] (https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php)
+[USGS Earthquake Data](https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php)
