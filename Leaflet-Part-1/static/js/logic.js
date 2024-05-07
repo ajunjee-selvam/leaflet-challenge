@@ -42,10 +42,10 @@ function markerColor(depth) {
 // Create a function to collect and display the earthquake features of each datapoint
 function createFeatures(earthquakeData) {
     // Create a function to run for each feature in the Features array
-    // Use this function to show additional information about the earthquake when the associated marker is clicked
+    // This function is used to show the magnitude, location, and depth for each associated marker when clicked
     function onEachFeature(feature, layer) {
-        // Popup describing the location, magnitude, and depth of the earthquake
-        layer.bindPopup(`Location: ${feature.properties.place} <br> Magnitude: ${feature.properties.mag} <br> Depth: ${feature.geometry.coordinates[2]}`);
+        // Popup describing the magnitude, location, and depth of the earthquake
+        layer.bindPopup(`Magnitude: ${feature.properties.mag} <br> Location: ${feature.properties.place} <br> Depth: ${feature.geometry.coordinates[2]}`);
     }
 
     // Create a GeoJSON layer containing the specfied features information for each point in the data, and create markers by calling the createMarker function. 
@@ -56,48 +56,62 @@ function createFeatures(earthquakeData) {
         pointToLayer: createMarker
     });
 
-
+    // Call the createMap function to create the earthquakes overlay map layer
     createMap(earthquakes);
 }
 
 function createMap(earthquakes) {
-
+    // Create the base layer using the street view
     let street = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       });
 
+    // Define a baseMaps object to hold our base layer
+    let baseMaps = {
+    "Street Map": street
+    };
 
+    // Create an overlay object to hold the earthquake overlay layer
+    let overlayMaps = {
+    Earthquakes: earthquakes
+    };
+
+    // Create a map object to store the layers and set the center and zoom
     let myMap = L.map("map", {
         center: [37.09, -95.71],
         zoom: 3,
         layers: [street, earthquakes]
     });
 
-
+    // Create a toggle menu for the different layers
     L.control.layers(baseMaps, overlayMaps, {
         collapsed: false
     }).addTo(myMap); 
     
+    // Create a legend object on the bottom right of the map
     let legend = L.control({position: 'bottomright'});
 
+    // Populate the legend with the depth range and corresponding color information, and add it to the map
     legend.onAdd = function (myMap) {
-
+        // Create an object and list to store the depth range information for the legend
         let div = L.DomUtil.create('div', 'info legend'),
-            grades = [-10, 10, 30, 60, 90],
-            labels = [],
-            legendInfo = "<h5>Magnitude</h5>";
-
-        for (let i = 0; i < grades.length; i++) {
+            depth = [0, 10, 30, 50, 70, 90],
+            labels = [];
+        // Create a title for the Depth legend and format it
+        div.innerHTML += "<h3 style='text-align: center'>Depth</h3>"
+        // Loop through the depth range list. Create a label for each depth range and use the markerColor function to assign the corresponding color. 
+        for (let i = 0; i < depth.length; i++) {
             div.innerHTML +=
-                '<i style="background:' + markerColor(grades[i] + 1) + '"></i> ' +
-                grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+                '<i style="background:' + markerColor(depth[i] + 1) + '">&nbsp&nbsp&nbsp&nbsp</i> ' +
+                depth[i] + (depth[i + 1] ? '&ndash;' + depth[i + 1] + '<br>' : '+');
         }    
 
+        // Return the created legend
         return div;
 
         };
 
-        
+        // Add the legend to the map object
         legend.addTo(myMap);
 }
 
